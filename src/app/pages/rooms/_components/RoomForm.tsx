@@ -7,6 +7,8 @@ import InputGroup from '@/components/FormElements/InputGroup';
 import { TextAreaGroup } from '@/components/FormElements/InputGroup/text-area';
 import { Select } from '@/components/FormElements/select';
 import Link from 'next/link';
+import Cookies from "js-cookie";
+
 
 interface Category {
   id: number;
@@ -43,7 +45,8 @@ export function RoomForm({ editingId }: RoomFormProps) {
   useEffect(() => {
     (async () => {
       try {
-        const token = localStorage.getItem('accessToken');
+        // const token = localStorage.getItem('accessToken');
+        const token = Cookies.get('accessToken');
         const res = await fetch('https://simaru.amisbudi.cloud/api/categories', {
           headers: { Authorization: `Bearer ${token}` }
         });
@@ -60,13 +63,20 @@ export function RoomForm({ editingId }: RoomFormProps) {
     if (!editingId) return;
     (async () => {
       try {
-        const token = localStorage.getItem('accessToken');
-        const id= localStorage.getItem('idRoom');
-        const name = localStorage.getItem('nameRoom');
-        const categoryId = localStorage.getItem('categoryIdRoom');
-        const price = localStorage.getItem('priceRoom');
-        const capacity = localStorage.getItem('capacityRoom');
-        const description = localStorage.getItem('descriptionRoom');
+        // const token = localStorage.getItem('accessToken');
+        // const id= localStorage.getItem('idRoom');
+        // const name = localStorage.getItem('nameRoom');
+        // const categoryId = localStorage.getItem('categoryIdRoom');
+        // const price = localStorage.getItem('priceRoom');
+        // const capacity = localStorage.getItem('capacityRoom');
+        // const description = localStorage.getItem('descriptionRoom');
+        const token = Cookies.get('accessToken');
+        const id = Cookies.get('idRoom');
+        const name = Cookies.get('nameRoom');
+        const categoryId = Cookies.get('categoryIdRoom');
+        const price = Cookies.get('priceRoom');
+        const capacity = Cookies.get('capacityRoom');
+        const description = Cookies.get('descriptionRoom');
         setForm({
           name: name || '',
           capacity: Number(capacity) || 0,
@@ -121,7 +131,8 @@ export function RoomForm({ editingId }: RoomFormProps) {
     if (!validate()) return;
 
     try {
-      const token = localStorage.getItem('accessToken');
+      // const token = localStorage.getItem('accessToken');
+      const token = Cookies.get('accessToken');
       const url = editingId ? `/api/rooms?id=${editingId}` : '/api/rooms';
       const method = editingId ? 'PUT' : 'POST';
       const res = await fetch(url, {  
@@ -201,7 +212,7 @@ export function RoomForm({ editingId }: RoomFormProps) {
       {errors.categoryId && <p className="text-sm text-red-500">{errors.categoryId}</p>}
 
       <TextAreaGroup
-         label="Description"
+        label="Description"
         name="description"
         placeholder="Enter Description"
         className="mb-4.5"

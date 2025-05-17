@@ -3,7 +3,8 @@ import { useState, ChangeEvent, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import InputGroup from "@/components/FormElements/InputGroup";
 import { ShowcaseSection } from "@/components/Layouts/showcase-section";
-import { Alert } from '@/components/ui-elements/alert'
+import { Alert } from '@/components/ui-elements/alert';
+import Cookies from "js-cookie";
 
 export function SignUpForm() {
   const router = useRouter();
@@ -57,7 +58,8 @@ export function SignUpForm() {
         }
         throw new Error(json.message || 'Registration failed');
       }
-      localStorage.setItem('accessToken', json.accessToken);
+      // localStorage.setItem('accessToken', json.accessToken);
+      Cookies.set("accessToken", json.accessToken, { expires: 7 });
       console.log(json.accessToken);
       console.log("user", json.user);
       router.push('/');

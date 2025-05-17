@@ -6,6 +6,7 @@ import InputGroup from "@/components/FormElements/InputGroup";
 import DatePickerOne from "@/components/FormElements/DatePicker/DatePickerOne";
 import { Select } from "@/components/FormElements/select";
 import Link from "next/link";
+import Cookies from "js-cookie";
 
 interface Room {
   id: number;
@@ -32,7 +33,8 @@ export function BookingForm({ editingId }: BookingFormProps) {
   useEffect(() => {
     (async () => {
       try {
-        const token = localStorage.getItem("accessToken");
+        // const token = localStorage.getItem("accessToken");
+        const token = Cookies.get("accessToken");
         const res = await fetch("/api/rooms", {
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -50,10 +52,15 @@ export function BookingForm({ editingId }: BookingFormProps) {
     if (!editingId) return;
     (async () => {
       try {
-      const token = localStorage.getItem("accessToken");
-      const id = localStorage.getItem("idBooking");
-      const bookingDate = localStorage.getItem("bookingDate");  
-      const roomId = localStorage.getItem("roomIdBooking");
+      // const token = localStorage.getItem("accessToken");
+      // const id = localStorage.getItem("idBooking");
+      // const bookingDate = localStorage.getItem("bookingDate");  
+      // const roomId = localStorage.getItem("roomIdBooking");
+      const token = Cookies.get("accessToken");
+      const id = Cookies.get("idBooking");
+      const bookingDate = Cookies.get("bookingDate");
+      const roomId = Cookies.get("roomIdBooking");
+
       setForm({
         bookingDate: bookingDate || "",
         roomId: Number(roomId) || 0,
@@ -108,7 +115,8 @@ export function BookingForm({ editingId }: BookingFormProps) {
     setSubmitError(null);
     if (!validate()) return;
     try {
-      const token = localStorage.getItem("accessToken");
+      // const token = localStorage.getItem("accessToken");
+      const token = Cookies.get("accessToken");
       const url = editingId ? `/api/bookings?id=${editingId}` : "/api/bookings";
       const method = editingId ? "PUT" : "POST";
       const res = await fetch(url, {

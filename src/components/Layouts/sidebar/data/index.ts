@@ -1,6 +1,9 @@
 import * as Icons from "../icons";
+import Cookies from "js-cookie";
 
-const accessToken = localStorage.getItem("accessToken");
+
+// const accessToken = localStorage.getItem("accessToken");
+const accessToken = Cookies.get("accessToken");
 export const NAV_DATA = [
   {
     label: "MAIN MENU",

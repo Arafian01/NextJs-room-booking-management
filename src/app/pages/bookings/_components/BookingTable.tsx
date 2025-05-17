@@ -11,6 +11,8 @@ import {
   TableBody,
   TableCell,
 } from "@/components/ui/table";
+import Cookies from "js-cookie";
+
 
 interface Booking {
   id: number;
@@ -20,7 +22,8 @@ interface Booking {
 
 export function BookingTable() {
   const [bookings, setBookings] = useState<Booking[]>([]);
-  const token = localStorage.getItem("accessToken");
+  // const token = localStorage.getItem("accessToken");
+  const token = Cookies.get("accessToken");
 
   const fetchList = async () => {
     const res = await fetch("/api/bookings", {
@@ -33,9 +36,12 @@ export function BookingTable() {
 
   useEffect(() => {
     fetchList();
-    localStorage.removeItem("idBooking");
-    localStorage.removeItem("bookingDate");
-    localStorage.removeItem("roomIdBooking");
+    // localStorage.removeItem("idBooking");
+    // localStorage.removeItem("bookingDate");
+    // localStorage.removeItem("roomIdBooking");
+    Cookies.remove("idBooking");
+    Cookies.remove("bookingDate");
+    Cookies.remove("roomIdBooking");
   }, []);
 
   const onDelete = async (id: number, name: string) => {
@@ -49,9 +55,12 @@ export function BookingTable() {
   };
 
   async function onSave(id:number, bookingDate:string, roomId:number){
-    localStorage.setItem("idBooking", id.toString());
-    localStorage.setItem("bookingDate", bookingDate);
-    localStorage.setItem("roomIdBooking", roomId.toString());
+    // localStorage.setItem("idBooking", id.toString());
+    // localStorage.setItem("bookingDate", bookingDate);
+    // localStorage.setItem("roomIdBooking", roomId.toString());
+    Cookies.set("idBooking", id.toString(), { expires: 7 });
+    Cookies.set("bookingDate", bookingDate, { expires: 7 });
+    Cookies.set("roomIdBooking", roomId.toString(), { expires: 7 });
   }
 
   return (

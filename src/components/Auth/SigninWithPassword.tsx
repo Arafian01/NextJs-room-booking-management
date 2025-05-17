@@ -5,6 +5,8 @@ import React, { useState } from "react";
 import InputGroup from "../FormElements/InputGroup";
 import { Checkbox } from "../FormElements/checkbox";
 import { useRouter } from 'next/navigation';
+import Cookies from "js-cookie";
+
 
 export default function SigninWithPassword() {
   const [email, setEmail] = useState('');
@@ -43,8 +45,11 @@ export default function SigninWithPassword() {
 
       if (!res.ok) throw new Error(data.message || 'Login failed');
 
-      localStorage.setItem("user", JSON.stringify(data));
-      localStorage.setItem('accessToken', data.accessToken);
+      // localStorage.setItem("user", JSON.stringify(data));
+      // localStorage.setItem('accessToken', data.accessToken);
+      Cookies.set("accessToken", data.accessToken, { expires: 7 });
+      Cookies.set("user", JSON.stringify(data.user), { expires: 7 });
+      console.log(data.user);
       // console.log(data.accessToken);
 
       router.push("/");

@@ -9,9 +9,12 @@ import { Notification } from "./notification";
 import { ThemeToggleSwitch } from "./theme-toggle";
 import { UserInfo } from "./user-info";
 
-const accessToken = localStorage.getItem("accessToken");
+import Cookies from "js-cookie";
+import { useEffect } from "react";
+
 export function Header() {
   const { toggleSidebar, isMobile } = useSidebarContext();
+  const accessToken = Cookies.get("accessToken");
 
   return (
     <header className="sticky top-0 z-30 flex items-center justify-between border-b border-stroke bg-white px-4 py-5 shadow-1 dark:border-stroke-dark dark:bg-gray-dark md:px-5 2xl:px-10">
@@ -42,7 +45,7 @@ export function Header() {
         <p className="font-medium">Next.js Admin Dashboard Solution</p>
       </div>
 
-      {accessToken && (
+      {/* {accessToken && ( */}
         <div className="flex flex-1 items-center justify-end gap-2 min-[375px]:gap-4">
           <div className="relative w-full max-w-[300px]">
             <input
@@ -61,7 +64,7 @@ export function Header() {
             <UserInfo />
           </div>
         </div>
-      )}
+      {/* )} */}
     </header>
   );
 }

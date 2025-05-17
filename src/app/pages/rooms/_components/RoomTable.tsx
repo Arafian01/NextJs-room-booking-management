@@ -6,6 +6,8 @@ import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@
 
 import { TrashIcon, PencilSquareIcon,  } from '@/assets/icons';
 import { DownloadIcon, PreviewIcon } from "@/components/Tables/icons";
+import Cookies from "js-cookie";
+
 
 interface Category { id: number; name: string; /*...*/ }
 interface Room {
@@ -22,16 +24,23 @@ interface Room {
 export  function RoomTable() {
   const [rooms, setRooms] = useState<Room[]>([]);
   const [search, setSearch] = useState("");
-  const token = localStorage.getItem("accessToken");
+  // const token = localStorage.getItem("accessToken");
+  const token = Cookies.get("accessToken");
 
   useEffect(() => { 
     fetchList();
-    localStorage.removeItem('idRoom');
-    localStorage.removeItem('nameRoom');
-    localStorage.removeItem('categoryIdRoom');
-    localStorage.removeItem('priceRoom');
-    localStorage.removeItem('capacityRoom');
-    localStorage.removeItem('descriptionRoom');
+    // localStorage.removeItem('idRoom');
+    // localStorage.removeItem('nameRoom');
+    // localStorage.removeItem('categoryIdRoom');
+    // localStorage.removeItem('priceRoom');
+    // localStorage.removeItem('capacityRoom');
+    // localStorage.removeItem('descriptionRoom');
+    Cookies.remove('idRoom');
+    Cookies.remove('nameRoom');
+    Cookies.remove('categoryIdRoom');
+    Cookies.remove('priceRoom');
+    Cookies.remove('capacityRoom');
+    Cookies.remove('descriptionRoom');
   }, []);
   async function fetchList(){
     const res = await fetch('/api/rooms', {
@@ -74,12 +83,18 @@ export  function RoomTable() {
   }
 
   async function onSave(id:number, name:string, categoryId:number, price:number, capacity:number, description:string){
-    localStorage.setItem("idRoom", id.toString());
-    localStorage.setItem("nameRoom", name);
-    localStorage.setItem("categoryIdRoom", categoryId.toString());
-    localStorage.setItem("priceRoom", price.toString());
-    localStorage.setItem("capacityRoom", capacity.toString());
-    localStorage.setItem("descriptionRoom", description);
+    // localStorage.setItem("idRoom", id.toString());
+    // localStorage.setItem("nameRoom", name);
+    // localStorage.setItem("categoryIdRoom", categoryId.toString());
+    // localStorage.setItem("priceRoom", price.toString());
+    // localStorage.setItem("capacityRoom", capacity.toString());
+    // localStorage.setItem("descriptionRoom", description);
+    Cookies.set("idRoom", id.toString(), { expires: 7 });
+    Cookies.set("nameRoom", name, { expires: 7 });
+    Cookies.set("categoryIdRoom", categoryId.toString(), { expires: 7 });
+    Cookies.set("priceRoom", price.toString(), { expires: 7 });
+    Cookies.set("capacityRoom", capacity.toString(), { expires: 7 });
+    Cookies.set("descriptionRoom", description, { expires: 7 });
   }
 
 
