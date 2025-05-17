@@ -9,16 +9,51 @@ import {
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { LogOutIcon, SettingsIcon, UserIcon } from "./icons";
+import { useRouter } from 'next/navigation';
+import Cookies from "js-cookie";
 
 export function UserInfo() {
   const [isOpen, setIsOpen] = useState(false);
+  const router = useRouter();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userData, setUserData] = useState(null);
 
   const USER = {
     name: "John Smith",
     email: "johnson@nextadmin.com",
     img: "/images/user/user-03.png",
+  };
+
+  useEffect(() => {
+    // const accessToken = localStorage.getItem('accessToken');
+    // const user = localStorage.getItem('user');
+    const accessToken = Cookies.get("accessToken");
+    const user = Cookies.get("user");
+    
+    if (accessToken) {
+      setIsLoggedIn(true);
+      // if (user) {
+      //   setUserData(JSON.parse(user));
+      // }
+    }
+  }, []);
+
+  const handleLogout = () => {
+    // Hapus data dari localStorage
+    // localStorage.removeItem('accessToken');
+    // localStorage.removeItem('user');
+    Cookies.remove("accessToken");
+    Cookies.remove("user");
+    
+    // Update state
+    setIsLoggedIn(false);
+    setUserData(null);
+
+    setIsOpen(false);
+    // Redirect ke halaman login
+    router.push('/auth/sign-in');
   };
 
   return (
@@ -106,7 +141,7 @@ export function UserInfo() {
         <div className="p-2 text-base text-[#4B5563] dark:text-dark-6">
           <button
             className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-[9px] hover:bg-gray-2 hover:text-dark dark:hover:bg-dark-3 dark:hover:text-white"
-            onClick={() => setIsOpen(false)}
+            onClick={() => handleLogout()}
           >
             <LogOutIcon />
 
