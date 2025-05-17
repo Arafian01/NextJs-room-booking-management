@@ -11,6 +11,7 @@ import type { Metadata } from "next";
 import NextTopLoader from "nextjs-toploader";
 import type { PropsWithChildren } from "react";
 import { Providers } from "./providers";
+import { AuthGuard } from "@/components/AuthGuard";
 
 export const metadata: Metadata = {
   title: {
@@ -27,7 +28,7 @@ export default function RootLayout({ children }: PropsWithChildren) {
       <body>
         <Providers>
           <NextTopLoader color="#5750F1" showSpinner={false} />
-
+          <AuthGuard>
           <div className="flex min-h-screen">
             <Sidebar />
 
@@ -39,6 +40,7 @@ export default function RootLayout({ children }: PropsWithChildren) {
               </main>
             </div>
           </div>
+          </AuthGuard>
         </Providers>
       </body>
     </html>
