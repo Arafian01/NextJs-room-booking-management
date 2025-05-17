@@ -1,14 +1,28 @@
-// 6. src/app/bookings/[id]/edit/page.tsx
-import Breadcrumb from '@/components/Breadcrumbs/Breadcrumb';
-import { BookingForm } from '../../_components/BookingForm';
-import { Metadata } from 'next';
+// src/app/pages/bookings/[id]/edit/page.tsx
+import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
+import type { Metadata } from "next";
+import { BookingForm } from "../../_components/BookingForm"; // your form component
 
-export const metadata: Metadata = { title: 'Edit Booking' };
-export default function EditBookingPage({ params }: { params: { id: string } }) {
+export const metadata: Metadata = {
+  title: "Edit Booking",
+};
+
+interface EditBookingPageProps {
+  // NOTE: params is now a promise
+  params: Promise<{ id: string }>;
+}
+
+export default async function EditBookingPage({ params }: EditBookingPageProps) {
+  // await the promise to get the actual params object
+  const { id } = await params;
+  const bookingId = Number(id);
+
   return (
-    <div className="p-6">
+    <div className="mx-auto w-full max-w-[1080px] p-6">
       <Breadcrumb pageName="Edit Booking" />
-      <BookingForm editingId={Number(params.id)} />
+      <div className="mt-6">
+        <BookingForm editingId={bookingId} />
+      </div>
     </div>
   );
 }

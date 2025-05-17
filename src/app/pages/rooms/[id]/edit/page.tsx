@@ -1,5 +1,3 @@
-"use client"; // or remove if purely server
-
 import { use } from "react";
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import type { Metadata } from "next";
