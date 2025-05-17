@@ -9,6 +9,7 @@ type PropsType = {
   items: { value: string; label: string }[];
   prefixIcon?: React.ReactNode;
   className?: string;
+  name?: string;
 } & (
   | { placeholder?: string; defaultValue: string }
   | { placeholder: string; defaultValue?: string }
@@ -20,6 +21,7 @@ export function Select({
   defaultValue,
   placeholder,
   prefixIcon,
+  name,
   className,
 }: PropsType) {
   const id = useId();
@@ -46,6 +48,7 @@ export function Select({
           id={id}
           defaultValue={defaultValue || ""}
           onChange={() => setIsOptionSelected(true)}
+          name={name}
           className={cn(
             "w-full appearance-none rounded-lg border border-stroke bg-transparent px-5.5 py-3 outline-none transition focus:border-primary active:border-primary dark:border-dark-3 dark:bg-dark-2 dark:focus:border-primary [&>option]:text-dark-5 dark:[&>option]:text-dark-6",
             isOptionSelected && "text-dark dark:text-white",
