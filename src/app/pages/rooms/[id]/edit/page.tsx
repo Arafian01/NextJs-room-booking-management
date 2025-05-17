@@ -1,4 +1,6 @@
-// src/app/rooms/[id]/edit/page.tsx
+"use client"; // or remove if purely server
+
+import { use } from "react";
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import type { Metadata } from "next";
 import { RoomForm } from "../../_components/RoomForm";
@@ -7,13 +9,9 @@ export const metadata: Metadata = {
   title: "Edit Room",
 };
 
-// Tell TS that params is a Promise<{ id: string }>
-interface EditRoomPageProps {
-  params: Promise<{ id: string }>;
-}
-
-export default async function EditRoomPage({ params }: EditRoomPageProps) {
-  const { id } = await params;
+export default function EditRoomPage(props: { params: Promise<{ id: string }> }) {
+  // unwrap the promise
+  const { id } = use(props.params);
   const roomId = Number(id);
 
   return (
