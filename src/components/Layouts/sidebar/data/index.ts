@@ -15,6 +15,18 @@ export const NAV_DATA = [
         ],
       },
       {
+        title: "Rooms",
+        url: "/pages/rooms",
+        icon: Icons.Table,
+        items: [],
+      },
+      {
+        title: "Bookings",
+        url: "/bookings",
+        icon: Icons.Table,
+        items: [],
+      },
+      {
         title: "Calendar",
         url: "/calendar",
         icon: Icons.Calendar,
