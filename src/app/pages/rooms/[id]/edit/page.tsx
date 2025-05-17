@@ -7,14 +7,14 @@ export const metadata: Metadata = {
   title: "Edit Room",
 };
 
+// Tell TS that params is a Promise<{ id: string }>
 interface EditRoomPageProps {
-  params: {
-    id: string;
-  };
+  params: Promise<{ id: string }>;
 }
 
-export default function EditRoomPage({ params }: EditRoomPageProps) {
-  const roomId = Number(params.id);
+export default async function EditRoomPage({ params }: EditRoomPageProps) {
+  const { id } = await params;
+  const roomId = Number(id);
 
   return (
     <div className="mx-auto w-full max-w-[1080px] p-6">
