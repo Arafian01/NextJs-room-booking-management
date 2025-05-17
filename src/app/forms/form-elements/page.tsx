@@ -57,7 +57,7 @@ export default function FormElementsPage() {
           </ShowcaseSection>
 
           <ShowcaseSection title="Time and date" className="space-y-5.5 !p-6.5">
-            <DatePickerOne />
+            {/* <DatePickerOne /> */}
             <DatePickerTwo />
           </ShowcaseSection>
 
@@ -88,7 +88,7 @@ export default function FormElementsPage() {
             <TextAreaGroup
               label="Active textarea"
               placeholder="Active textarea"
-              active
+              // active
             />
 
             <TextAreaGroup

@@ -40,7 +40,7 @@ export function ContactForm() {
 
         <Select
           label="Subject"
-          placeholder="Select your subject"
+          // placeholder="Select your subject"
           className="mb-4.5"
           items={[
             { label: "United States", value: "USA" },
