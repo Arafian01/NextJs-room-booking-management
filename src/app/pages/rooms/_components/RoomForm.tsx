@@ -1,11 +1,11 @@
-'use client';
-import { useState, useEffect, FormEvent, useRef } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import InputGroup from '@/components/FormElements/InputGroup';
-import { TextAreaGroup } from '@/components/FormElements/InputGroup/text-area';
-import { Select } from '@/components/FormElements/select';
-import Link from 'next/link';
-import api from '@/lib/api';
+"use client";
+import { useState, useEffect, FormEvent, useRef } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import InputGroup from "@/components/FormElements/InputGroup";
+import { TextAreaGroup } from "@/components/FormElements/InputGroup/text-area";
+import { Select } from "@/components/FormElements/select";
+import Link from "next/link";
+import api from "@/lib/api";
 
 interface Category {
   id: number;
@@ -29,75 +29,93 @@ export function RoomForm({ editingId }: RoomFormProps) {
   const searchParams = useSearchParams();
   const formRef = useRef<HTMLFormElement>(null);
   const [categories, setCategories] = useState<Category[]>([]);
-  const [initialForm, setInitialForm] = useState<RoomFormData>({
-    name: '',
+  const [formData, setFormData] = useState<RoomFormData>({
+    name: "",
     capacity: 0,
     price: 0,
     categoryId: 0,
-    description: '',
+    description: "",
   });
-  const [errors, setErrors] = useState<Partial<Record<keyof RoomFormData, string>>>({});
+  const [errors, setErrors] = useState<
+    Partial<Record<keyof RoomFormData, string>>
+  >({});
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Load categories
   useEffect(() => {
     async function fetchCategories() {
       try {
-        const res = await api.get('/categories');
-        setCategories(res.data.data || []);
-      } catch (e: any) {
-        console.error('Failed to fetch categories:', e);
+        const res = await api.get("/categories");
+        setCategories(res.data || []);
+      } catch (error) {
+        console.error("Failed to fetch categories:", error);
       }
     }
     fetchCategories();
   }, []);
 
-  // Load room data for editing
   useEffect(() => {
-    const name = searchParams.get('name') || '';
-    const capacity = Number(searchParams.get('capacity')) || 0;
-    const price = Number(searchParams.get('price')) || 0;
-    const categoryId = Number(searchParams.get('categoryId')) || 0;
-    const description = searchParams.get('description') || '';
-
-    if (editingId) {
-      async function fetchRoom() {
-        try {
+    async function loadInitialData() {
+      setIsLoading(true);
+      try {
+        if (editingId) {
           const res = await api.get(`/rooms/${editingId}`);
-          const room = res.data.data;
-          setInitialForm({
-            name: room.name,
-            capacity: room.capacity,
-            price: room.price,
-            categoryId: room.categoryId,
-            description: room.description || '',
+          const room = res.data;
+          setFormData({
+            name: room.name || "",
+            capacity: room.capacity || 0,
+            price: room.price || 0,
+            categoryId: room.categoryId || 0,
+            description: room.description || "",
           });
-        } catch (e: any) {
-          console.error('Failed to fetch room:', e);
+        } else {
+          setFormData({
+            name: searchParams.get("name") || "",
+            capacity: Number(searchParams.get("capacity")) || 0,
+            price: Number(searchParams.get("price")) || 0,
+            categoryId: Number(searchParams.get("categoryId")) || 0,
+            description: searchParams.get("description") || "",
+          });
         }
+      } catch (error) {
+        console.error("Failed to fetch room:", error);
+      } finally {
+        setIsLoading(false);
       }
-      fetchRoom();
-    } else {
-      setInitialForm({ name, capacity, price, categoryId, description });
     }
+    loadInitialData();
   }, [editingId, searchParams]);
 
   function validate(formData: FormData): boolean {
     const err: typeof errors = {};
-    const name = formData.get('name') as string;
-    const capacity = Number(formData.get('capacity'));
-    const price = Number(formData.get('price'));
-    const categoryId = Number(formData.get('categoryId'));
-    const description = formData.get('description') as string;
+    const name = formData.get("name") as string;
+    const capacity = Number(formData.get("capacity"));
+    const price = Number(formData.get("price"));
+    const categoryId = Number(formData.get("categoryId"));
 
-    if (!name) err.name = 'Name is required';
-    if (capacity <= 0) err.capacity = 'Capacity must be > 0';
-    if (price < 0) err.price = 'Price cannot be negative';
-    if (!categoryId) err.categoryId = 'Please select a category';
-    // Description optional
+    if (!name.trim()) err.name = "Name is required";
+    if (capacity <= 0) err.capacity = "Capacity must be greater than 0";
+    if (price < 0) err.price = "Price cannot be negative";
+    if (!categoryId) err.categoryId = "Please select a category";
+
     setErrors(err);
     return Object.keys(err).length === 0;
   }
+
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >,
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]:
+        name === "capacity" || name === "price" || name === "categoryId"
+          ? Number(value)
+          : value,
+    }));
+  };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -110,35 +128,42 @@ export function RoomForm({ editingId }: RoomFormProps) {
 
     try {
       const payload = {
-        name: formData.get('name') as string,
-        capacity: Number(formData.get('capacity')),
-        price: Number(formData.get('price')),
-        categoryId: Number(formData.get('categoryId')),
-        description: formData.get('description') as string,
+        name: formData.get("name") as string,
+        capacity: Number(formData.get("capacity")),
+        price: Number(formData.get("price")),
+        categoryId: Number(formData.get("categoryId")),
+        description: formData.get("description") as string,
       };
 
-      const url = editingId ? `/rooms/${editingId}` : '/rooms';
-      const method = editingId ? 'put' : 'post';
+      const url = editingId ? `/rooms/${editingId}` : "/rooms";
+      const method = editingId ? "put" : "post";
       const res = await api[method](url, payload);
-      sessionStorage.setItem('roomAlert', JSON.stringify({
-        variant: 'success',
-        title: editingId ? 'Room Updated' : 'Room Added',
-        description: res.data.message || 'Operation successful.',
-      }));
-      router.push('/pages/rooms');
-    } catch (e: any) {
-      sessionStorage.setItem('roomAlert', JSON.stringify({
-        variant: 'error',
-        title: 'Error',
-        description: e.response?.data?.message || 'Operation failed.',
-      }));
-      router.push('/pages/rooms');
+
+      sessionStorage.setItem(
+        "roomAlert",
+        JSON.stringify({
+          variant: "success",
+          title: editingId ? "Room Updated" : "Room Added",
+          description: res.data.message || "Operation successful.",
+        }),
+      );
+      router.push("/pages/rooms");
+    } catch (error: any) {
+      setSubmitError(error.response?.data?.message || "Operation failed.");
     }
   };
 
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
   return (
-    <form ref={formRef} onSubmit={handleSubmit} className="!p-6.5 rounded-[10px] border border-stroke bg-white shadow-1 dark:border-dark-3 dark:bg-gray-dark dark:shadow-card sm:p-7.5">
-      {submitError && <p className="text-red-500 mb-4">{submitError}</p>}
+    <form
+      ref={formRef}
+      onSubmit={handleSubmit}
+      className="rounded-[10px] border border-stroke bg-white p-6.5 shadow-1 dark:border-dark-3 dark:bg-gray-dark dark:shadow-card sm:p-7.5"
+    >
+      {submitError && <p className="mb-4 text-red-500">{submitError}</p>}
 
       <InputGroup
         label="Name"
@@ -146,9 +171,9 @@ export function RoomForm({ editingId }: RoomFormProps) {
         name="name"
         placeholder="Enter Name"
         className="mb-4.5"
-        defaultValue={initialForm.name}
+        value={formData.name}
+        handleChange={handleChange}
       />
-      {errors.name && <p className="text-sm text-red-500">{errors.name}</p>}
 
       <InputGroup
         label="Capacity"
@@ -156,9 +181,9 @@ export function RoomForm({ editingId }: RoomFormProps) {
         name="capacity"
         placeholder="Enter Capacity"
         className="mb-4.5"
-        defaultValue={String(initialForm.capacity)}
+        value={String(formData.capacity)}
+        handleChange={handleChange}
       />
-      {errors.capacity && <p className="text-sm text-red-500">{errors.capacity}</p>}
 
       <InputGroup
         label="Price"
@@ -166,35 +191,42 @@ export function RoomForm({ editingId }: RoomFormProps) {
         name="price"
         placeholder="Enter Price"
         className="mb-4.5"
-        defaultValue={String(initialForm.price)}
+        value={String(formData.price)}
+        handleChange={handleChange}
       />
-      {errors.price && <p className="text-sm text-red-500">{errors.price}</p>}
 
       <Select
         label="Category"
         className="mb-4.5"
         placeholder="Select category"
-        defaultValue={String(initialForm.categoryId)}
-        items={categories.map(c => ({ label: c.name, value: String(c.id) }))}
+        value={String(formData.categoryId)}
+        items={categories.map((c) => ({ label: c.name, value: String(c.id) }))}
         name="categoryId"
+        onChange={handleChange}
+        error={errors.categoryId}
       />
-      {errors.categoryId && <p className="text-sm text-red-500">{errors.categoryId}</p>}
 
       <TextAreaGroup
         label="Description"
         name="description"
         placeholder="Enter Description"
         className="mb-4.5"
-        defaultValue={initialForm.description}
+        defaultValue={formData.description}
+        onChange={handleChange}
       />
-      {errors.description && <p className="text-sm text-red-500">{errors.description}</p>}
 
       <div className="flex justify-end space-x-4">
-        <Link href="/pages/rooms" className="flex w-20 justify-center rounded-lg bg-red p-[13px] font-medium text-white hover:bg-opacity-90">
+        <Link
+          href="/pages/rooms"
+          className="flex w-20 justify-center rounded-lg bg-red-500 p-[13px] font-medium text-white hover:bg-opacity-90"
+        >
           Back
         </Link>
-        <button type="submit" className="flex w-20 justify-center rounded-lg bg-primary p-[13px] font-medium text-white hover:bg-opacity-90">
-          {editingId ? 'Update' : 'Save'}
+        <button
+          type="submit"
+          className="flex w-20 justify-center rounded-lg bg-primary p-[13px] font-medium text-white hover:bg-opacity-90"
+        >
+          {editingId ? "Update" : "Save"}
         </button>
       </div>
     </form>

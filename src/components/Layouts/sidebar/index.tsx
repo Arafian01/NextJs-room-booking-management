@@ -18,14 +18,11 @@ export function Sidebar() {
   const toggleExpanded = (title: string) => {
     setExpandedItems((prev) => (prev.includes(title) ? [] : [title]));
 
-    // Uncomment the following line to enable multiple expanded items
-    // setExpandedItems((prev) =>
-    //   prev.includes(title) ? prev.filter((t) => t !== title) : [...prev, title],
-    // );
+
   };
 
   useEffect(() => {
-    // Keep collapsible open, when it's subpage is active
+
     NAV_DATA.some((section) => {
       return section.items.some((item) => {
         return item.items.some((subItem) => {
@@ -34,13 +31,13 @@ export function Sidebar() {
               toggleExpanded(item.title);
             }
 
-            // Break the loop
+            
             return true;
           }
         });
       });
     });
-  }, [pathname]);
+  }, [pathname, expandedItems, toggleExpanded]); // Added dependencies
 
   return (
     <>

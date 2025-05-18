@@ -1,4 +1,4 @@
-"use client";
+'use client';
 import { EmailIcon, PasswordIcon } from "@/assets/icons";
 import Link from "next/link";
 import React, { useState } from "react";
@@ -35,29 +35,21 @@ export default function SigninWithPassword() {
     setError("");
 
     try {
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/auth/login`,
-        {
-          email: data.email,
-          password: data.password,
-        }
-      );
-      const { access_token } = response.data.accessToken;
-
-      // Simpan accessToken ke cookie
-      Cookies.set("accessToken", response.data.accessToken, {
-        expires: data.remember ? 7 : 1, // 7 hari jika "Remember me" dicentang, 1 hari jika tidak
-        secure: process.env.NODE_ENV === "production", // Hanya HTTPS di production
-        sameSite: "strict",
+      const response = await axios.post('/api/auth/login', {
+        email: data.email,
+        password: data.password,
       });
-
-      // console.log("Login successful:", response.data);
-      console.log("Access Token:", response.data.accessToken);
-
-      // Redirect ke dashboard setelah login berhasil
-      router.push("/");
+      const { accessToken } = response.data;
+      console.log('Login response:', response.data);
+      console.log('Cookies after login:', {
+        accessToken: Cookies.get('accessToken'),
+        apiCookie: Cookies.get('apiCookie'),
+      });
+      router.push("/dashboard");
     } catch (err: any) {
-      setError(err.response?.data?.message || "Login failed. Please try again.");
+      const errorMessage = err.response?.data?.message || "Login failed. Please try again.";
+      setError(errorMessage);
+      console.error('Login error:', err);
     } finally {
       setLoading(false);
     }

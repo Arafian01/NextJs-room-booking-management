@@ -7,6 +7,7 @@ import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@
 import { TrashIcon, PencilSquareIcon } from '@/assets/icons';
 import { DownloadIcon, PreviewIcon } from "@/components/Tables/icons";
 import api from "@/lib/api";
+import Cookies from "js-cookie";
 
 interface Category { id: number; name: string; }
 interface Room {
@@ -22,26 +23,36 @@ interface Room {
 
 export function RoomTable() {
   const [rooms, setRooms] = useState<Room[]>([]);
+  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
   useEffect(() => {
     fetchList();
-  }, []);
+  }, [fetchList]);
 
   async function fetchList() {
     try {
-      const res = await api.get('/rooms',);
+      const token = Cookies.get('accessToken');
+      // console.log('Fetching rooms with token:', token);
+      const res = await api.get('/rooms');
+      // console.log('Rooms response:', res.data);
       setRooms(res.data.data || []);
-      console.log(res.data.data);
-    } catch (err) {
+      setError(null);
+    } catch (err: any) {
       console.error('Failed to fetch rooms:', err);
+      setError(err.response?.data?.message || 'Failed to load rooms. Please try again.');
+      if (err.response?.status === 401) {
+        Cookies.remove('accessToken');
+        router.push('/auth/login');
+      }
     }
   }
 
   async function onDelete(id: number, name: string) {
     if (!confirm(`Delete room ${name}?`)) return;
     try {
-      await api.delete(`/rooms/${id}`);
+      const res = await api.delete(`/rooms/${id}`);
+      console.log('Delete response:', res.data);
       sessionStorage.setItem(
         "roomAlert",
         JSON.stringify({
@@ -52,19 +63,30 @@ export function RoomTable() {
       );
       fetchList();
     } catch (err: any) {
+      console.error('Delete error:', err);
+      const errorMessage = err.response?.data?.message || err.response?.data?.details || 'Failed to delete room.';
       sessionStorage.setItem(
         "roomAlert",
         JSON.stringify({
           variant: "error",
           title: "Error",
-          description: err.response?.data?.message || "Failed to delete room.",
+          description: errorMessage,
         })
       );
+      if (err.response?.status === 401) {
+        Cookies.remove('accessToken');
+        router.push('/auth/login');
+      }
     }
   }
 
   return (
     <div className="rounded-[10px] border border-stroke bg-white p-4 shadow-1 dark:border-dark-3 dark:bg-gray-dark dark:shadow-card sm:p-7.5 space-y-10 text-right">
+      {error && (
+        <div className="mb-4 text-red-500 bg-red-100 p-3 rounded">
+          {error}
+        </div>
+      )}
       <Link href="/pages/rooms/create" className="rounded-lg bg-primary p-[13px] font-medium text-white hover:bg-opacity-90">
         Add New
       </Link>
@@ -87,6 +109,7 @@ export function RoomTable() {
                 <p className="text-dark dark:text-white text-center">
                   {rooms.indexOf(room) + 1}
                 </p>
+                {room.id}
               </TableCell>
               <TableCell className="min-w-[155px] xl:pl-7.5">
                 <p className="text-dark dark:text-white text-left">
@@ -122,14 +145,14 @@ export function RoomTable() {
                   <Link
                     href={{
                       pathname: `/pages/rooms/${room.id}/edit`,
-                      query: {
-                        id: room.id,
-                        name: room.name,
-                        categoryId: room.categoryId,
-                        price: room.price,
-                        capacity: room.capacity,
-                        description: room.description,
-                      },
+                      // query: {
+                      //   id: room.id,
+                      //   name: room.name,
+                      //   categoryId: room.categoryId,
+                      //   price: room.price,
+                      //   capacity: room.capacity,
+                      //   description: room.description,
+                      // },
                     }}
                     className="hover:text-primary"
                   >
