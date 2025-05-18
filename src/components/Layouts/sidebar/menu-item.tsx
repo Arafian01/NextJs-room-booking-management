@@ -20,7 +20,6 @@ const menuItemBaseStyles = cva(
 );
 
 export function MenuItem(
-  
   props: {
     className?: string;
     children: React.ReactNode;

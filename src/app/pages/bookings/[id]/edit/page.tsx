@@ -1,14 +1,25 @@
+import { NextPage } from 'next';
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import { BookingForm } from "../../_components/BookingForm";
 import { Metadata } from "next";
 
-export const metadata: Metadata = { title: "Edit Booking" };
+export const metadata: Metadata = { 
+  title: "Edit Booking"
+};
 
-export default function EditBookingPage({ params }: { params: { id: string } }) {
+interface EditBookingPageProps {
+  params: Promise<{ id: string }>;
+}
+
+const EditBookingPage: NextPage<EditBookingPageProps> = async ({ params }) => {
+  const { id } = await params; // Await the params Promise
+
   return (
-    <div className="p-6">
-      <Breadcrumb pageName="Edit Booking" />
-      <BookingForm editingId={Number(params.id)} />
+    <div className="relative mx-auto w-full max-w-[1080px]">
+      <Breadcrumb pageName="Edit Room" />
+      <BookingForm editingId={Number(id)} />
     </div>
   );
-}
+};
+
+export default EditBookingPage;

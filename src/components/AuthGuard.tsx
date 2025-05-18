@@ -13,7 +13,7 @@ export function AuthGuard({ children }: PropsWithChildren) {
     console.log("Access Token:", accessToken);
 
     // Rute yang diizinkan tanpa autentikasi
-    const publicPaths = ["/auth/sign-in", "/auth/register"];
+    const publicPaths = ["/auth/sign-in", "/auth/sign-up"];
 
     // Jika tidak ada accessToken dan bukan rute publik, arahkan ke login
     if (!accessToken && !publicPaths.includes(pathname)) {

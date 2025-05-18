@@ -30,8 +30,6 @@ export function Sidebar() {
             if (!expandedItems.includes(item.title)) {
               toggleExpanded(item.title);
             }
-
-            
             return true;
           }
         });
