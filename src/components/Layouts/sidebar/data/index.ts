@@ -22,7 +22,7 @@ export const NAV_DATA = [
       },
       {
         title: "Bookings",
-        url: "/bookings",
+        url: "/pages/bookings",
         icon: Icons.Table,
         items: [],
       },
