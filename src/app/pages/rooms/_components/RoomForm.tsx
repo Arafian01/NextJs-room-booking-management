@@ -6,6 +6,8 @@ import { TextAreaGroup } from "@/components/FormElements/InputGroup/text-area";
 import { Select } from "@/components/FormElements/select";
 import Link from "next/link";
 import api from "@/lib/api";
+import { cookies } from "next/headers";
+import Cookies from "js-cookie";
 
 interface Category {
   id: number;
@@ -59,14 +61,20 @@ export function RoomForm({ editingId }: RoomFormProps) {
       setIsLoading(true);
       try {
         if (editingId) {
-          const res = await api.get(`/rooms/${editingId}`);
-          const room = res.data;
+          // const res = await api.get(`/rooms/${editingId}`);
+          // const room = res.data;
+          //get cookies
+          const name = Cookies.get("nameRoom");
+          const categoryId = Cookies.get("categoryIdRoom");
+          const price = Cookies.get("priceRoom");
+          const capacity = Cookies.get("capacityRoom");
+          const description = Cookies.get("descriptionRoom");
           setFormData({
-            name: room.name || "",
-            capacity: room.capacity || 0,
-            price: room.price || 0,
-            categoryId: room.categoryId || 0,
-            description: room.description || "",
+            name: name || "",
+            capacity: Number(capacity) || 0,
+            price: Number(price) || 0,
+            categoryId: Number(categoryId) || 0,
+            description: description || "",
           });
         } else {
           setFormData({

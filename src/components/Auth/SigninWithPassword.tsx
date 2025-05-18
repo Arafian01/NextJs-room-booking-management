@@ -45,7 +45,7 @@ export default function SigninWithPassword() {
         accessToken: Cookies.get('accessToken'),
         apiCookie: Cookies.get('apiCookie'),
       });
-      router.push("/dashboard");
+      router.push("/");
     } catch (err: any) {
       const errorMessage = err.response?.data?.message || "Login failed. Please try again.";
       setError(errorMessage);
