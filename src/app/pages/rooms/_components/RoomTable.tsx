@@ -154,7 +154,6 @@ export function RoomTable() {
                 <p className="text-center text-dark dark:text-white">
                   {rooms.indexOf(room) + 1}
                 </p>
-                {room.id}
               </TableCell>
               <TableCell className="min-w-[155px] xl:pl-7.5">
                 <p className="text-left text-dark dark:text-white">

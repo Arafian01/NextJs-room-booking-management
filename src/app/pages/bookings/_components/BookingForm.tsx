@@ -6,6 +6,7 @@ import DatePickerOne from "@/components/FormElements/DatePicker/DatePickerOne";
 import { Select } from "@/components/FormElements/select";
 import Link from "next/link";
 import api from "@/lib/api";
+import Cookies from "js-cookie";
 
 interface Room {
   id: number;
@@ -24,7 +25,9 @@ export function BookingForm({ editingId }: BookingFormProps) {
   const formRef = useRef<HTMLFormElement>(null);
   const [form, setForm] = useState<BookingData>({ bookingDate: "", roomId: 0 });
   const [rooms, setRooms] = useState<Room[]>([]);
-  const [errors, setErrors] = useState<Partial<Record<keyof BookingData, string>>>({});
+  const [errors, setErrors] = useState<
+    Partial<Record<keyof BookingData, string>>
+  >({});
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(!!editingId);
 
@@ -45,11 +48,18 @@ export function BookingForm({ editingId }: BookingFormProps) {
       if (!editingId) return;
       setIsLoading(true);
       try {
-        const res = await api.get(`/bookings/${editingId}`);
-        const booking = res.data;
+        // const res = await api.get(`/bookings/${editingId}`);
+        // const booking = res.data;
+        // setForm({
+        //   bookingDate: booking.bookingDate || "",
+        //   roomId: booking.roomId || 0,
+        // });
+        const bookingId = Cookies.get("bookingId");
+        const bookingDate = Cookies.get("bookingDate");
+        const roomId = Cookies.get("roomIdBooking");
         setForm({
-          bookingDate: booking.bookingDate || "",
-          roomId: booking.roomId || 0,
+          bookingDate: bookingDate || "",
+          roomId: Number(roomId),
         });
       } catch (error) {
         console.error("Failed to fetch booking:", error);
@@ -62,7 +72,7 @@ export function BookingForm({ editingId }: BookingFormProps) {
   }, [editingId]);
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     const { name, value } = e.target;
     setForm((prev) => ({
@@ -108,7 +118,7 @@ export function BookingForm({ editingId }: BookingFormProps) {
           variant: "success",
           title: editingId ? "Booking Updated" : "Booking Added",
           description: res.data.message || "Operation successful.",
-        })
+        }),
       );
       router.push("/pages/bookings");
     } catch (error: any) {
@@ -127,7 +137,7 @@ export function BookingForm({ editingId }: BookingFormProps) {
       className="rounded-[10px] border border-stroke bg-white p-6.5 shadow-1 dark:border-dark-3 dark:bg-gray-dark dark:shadow-card sm:p-7.5"
     >
       {submitError && (
-        <p className="mb-4 text-red-500 bg-red-50 p-3 rounded">{submitError}</p>
+        <p className="mb-4 rounded bg-red-50 p-3 text-red-500">{submitError}</p>
       )}
 
       <DatePickerOne

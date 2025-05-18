@@ -11,6 +11,7 @@ import {
   TableCell,
 } from "@/components/ui/table";
 import api from "@/lib/api";
+import Cookies from "js-cookie";
 
 interface Booking {
   id: number;
@@ -32,6 +33,10 @@ export function BookingTable() {
 
   useEffect(() => {
     fetchList();
+    // Clear cookies
+    Cookies.remove("bookingId");
+    Cookies.remove("bookingDate");
+    Cookies.remove("roomIdBooking");
   }, []);
 
   const onDelete = async (id: number, name: string) => {
@@ -58,6 +63,16 @@ export function BookingTable() {
       );
     }
   };
+
+  async function onSave(
+    id: number,
+    bookingDate: string,
+    roomId: number,
+  ) {
+    Cookies.set("bookingId", id.toString());
+    Cookies.set("bookingDate", bookingDate);
+    Cookies.set("roomIdBooking", roomId.toString());
+  }
 
   return (
     <div className="space-y-10 rounded-[10px] border border-stroke bg-white p-4 text-right shadow-1 dark:border-dark-3 dark:bg-gray-dark dark:shadow-card sm:p-7.5">
@@ -96,7 +111,7 @@ export function BookingTable() {
                 <div className="flex justify-end gap-2">
                   <Link
                     href={`/pages/bookings/${b.id}/edit`}
-                    className="hover:text-primary"
+                    className="hover:text-primary" onClick={() => onSave(b.id, b.bookingDate, b.room.id)}
                   >
                     <span className="sr-only">Edit Booking</span>
                     <PencilSquareIcon />
